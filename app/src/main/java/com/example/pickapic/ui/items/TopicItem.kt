@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.pickapic.ui.navigation.PicturesRoute
 import com.example.pickapic.ui.theme.Shapes
 import com.example.pickapic.util.TopicModel
 
@@ -26,7 +27,7 @@ fun TopicItem(item: TopicModel, navController: NavController) {
         shape = Shapes.large,
         modifier = Modifier.padding(16.dp),
         elevation = 12.dp,
-        onClick = {navController.navigate("picScreen/${item.topicName}")}
+        onClick = { navController.navigate(PicturesRoute(topic = item.topicName)) }
     ) {
         Image(
             painter = painterResource(id = item.imageId), contentDescription = "image",

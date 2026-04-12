@@ -21,6 +21,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pickapic.R
+import com.example.pickapic.ui.navigation.HomeRoute
+import com.example.pickapic.ui.navigation.RegistrationRoute
 import com.example.pickapic.ui.composables.TitleCard
 import com.example.pickapic.ui.theme.*
 
@@ -103,7 +105,7 @@ fun LoginScreen(
                     )
                     Button(
                         onClick = {
-                            navController.navigate(Screen.HomeScreen.route)
+                            navController.navigate(HomeRoute)
                         },
                         modifier = Modifier
                             .padding(6.dp)
@@ -120,7 +122,7 @@ fun LoginScreen(
                     }
                     OutlinedButton(
                         onClick = {
-                            navController.navigate(Screen.RegistrationScreen.route)
+                            navController.navigate(RegistrationRoute)
                         },
                         modifier = Modifier
                             .padding(2.dp)

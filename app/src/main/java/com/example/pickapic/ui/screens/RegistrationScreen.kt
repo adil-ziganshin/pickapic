@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pickapic.R
+import com.example.pickapic.ui.navigation.HomeRoute
 import com.example.pickapic.ui.composables.TitleCard
 import com.example.pickapic.ui.theme.*
 
@@ -102,7 +103,7 @@ fun RegistrationScreen(
                     )
                     Button(
                         onClick = {
-                            navController.navigate(Screen.HomeScreen.route)
+                            navController.navigate(HomeRoute)
                         },
                         modifier = Modifier
                             .padding(top = 10.dp)

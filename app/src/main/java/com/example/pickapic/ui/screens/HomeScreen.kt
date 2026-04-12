@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pickapic.R
+import com.example.pickapic.ui.navigation.FavouritePicRoute
+import com.example.pickapic.ui.navigation.PicturesRoute
 import com.example.pickapic.ui.composables.TitleCard
 import com.example.pickapic.ui.items.TopicItem
 import com.example.pickapic.ui.theme.*
@@ -66,7 +68,7 @@ private val topicsList = listOf(
 private fun FloatingActButton(navController: NavController) {
     ExtendedFloatingActionButton(
         onClick = {
-            navController.navigate(Screen.FavouritePicScreen.route)
+            navController.navigate(FavouritePicRoute)
         },
         text = { Text(text = "Favourites") },
         icon = {
@@ -146,7 +148,7 @@ private fun SearchBar(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
                     onClick = {
-                        navController.navigate("picScreen/${inputValue.value}")
+                        navController.navigate(PicturesRoute(topic = inputValue.value.text))
                     }
                 ) {
                     Icon(
@@ -161,7 +163,7 @@ private fun SearchBar(
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    navController.navigate("picScreen/${inputValue.value}")
+                    navController.navigate(PicturesRoute(topic = inputValue.value.text))
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
