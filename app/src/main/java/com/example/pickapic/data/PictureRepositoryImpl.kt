@@ -6,10 +6,9 @@ import javax.inject.Inject
 
 class PictureRepositoryImpl @Inject constructor (
     private val pictureService: PictureService
-    ): PictureRepository<PictureApiResponse>{
+): PictureRepository<PictureApiResponse>{
 
     override suspend fun getData(query: String): PictureApiResponse {
-        Log.d("DEBUGER", pictureService.getData(query = query).toString())
         return pictureService.getData(query = query)
     }
 }
