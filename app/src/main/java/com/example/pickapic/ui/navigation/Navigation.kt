@@ -5,12 +5,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.pickapic.ui.screens.FavouritePicScreen
-import com.example.pickapic.ui.screens.FullPicScreen
-import com.example.pickapic.ui.screens.HomeScreen
-import com.example.pickapic.ui.screens.LoginScreen
-import com.example.pickapic.ui.screens.PicturesScreen
-import com.example.pickapic.ui.screens.RegistrationScreen
+import com.example.pickapic.core.navigation.FavouritePicRoute
+import com.example.pickapic.core.navigation.FullPicRoute
+import com.example.pickapic.core.navigation.HomeRoute
+import com.example.pickapic.core.navigation.LoginRoute
+import com.example.pickapic.core.navigation.PicturesRoute
+import com.example.pickapic.core.navigation.RegistrationRoute
+import com.example.pickapic.feature.auth.LoginScreen
+import com.example.pickapic.feature.auth.RegistrationScreen
+import com.example.pickapic.feature.favorites.FavouritePicScreen
+import com.example.pickapic.feature.home.HomeScreen
+import com.example.pickapic.feature.pictures.FullPicScreen
+import com.example.pickapic.feature.pictures.PicturesScreen
 
 @Composable
 fun Navigation() {
@@ -27,7 +33,7 @@ fun Navigation() {
         }
         composable<PicturesRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<PicturesRoute>()
-            PicturesScreen(topic = route.topic, navController = navController)
+            PicturesScreen(topic = route.topic)
         }
         composable<FavouritePicRoute> {
             FavouritePicScreen()

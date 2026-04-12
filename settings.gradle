@@ -14,3 +14,9 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Pickapic"
 include ':app'
+include ':uikit'
+include ':core'
+include ':feature-auth'
+include ':feature-home'
+include ':feature-pictures'
+include ':feature-favorites'
