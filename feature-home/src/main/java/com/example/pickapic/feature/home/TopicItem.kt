@@ -15,23 +15,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.pickapic.core.navigation.PicturesRoute
 import com.example.pickapic.core.util.TopicModel
 import com.example.pickapic.uikit.theme.Shapes
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TopicItem(item: TopicModel, navController: NavController) {
-
+fun TopicItem(
+    item: TopicModel,
+    onClick: (String) -> Unit
+) {
     Card(
         shape = Shapes.large,
         modifier = Modifier.padding(16.dp),
         elevation = 12.dp,
-        onClick = { navController.navigate(PicturesRoute(topic = item.topicName)) }
+        onClick = {
+            onClick(item.topicName)
+        }
     ) {
         Image(
             painter = painterResource(id = item.imageId),
-            contentDescription = "image",
+            contentDescription = item.topicName,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(240.dp)

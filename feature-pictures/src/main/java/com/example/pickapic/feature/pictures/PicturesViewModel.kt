@@ -19,7 +19,7 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 class PicturesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: PictureRepositoryImpl
+    private val repository: PictureRepositoryImpl,
 ) : ViewModel() {
 
     private val tag = "PicturesViewModel"
@@ -31,10 +31,6 @@ class PicturesViewModel @Inject constructor(
 
     init {
         fetchPictures()
-    }
-
-    fun onPictureClick() {
-
     }
 
     fun onErrorDismiss() {

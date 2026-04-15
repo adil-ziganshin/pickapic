@@ -9,10 +9,10 @@ object LoginRoute
 object RegistrationRoute
 
 @Serializable
-object HomeRoute
+data class PicturesRoute(val topic: String)
 
 @Serializable
-data class PicturesRoute(val topic: String)
+object HomeRoute
 
 @Serializable
 object FavouritePicRoute

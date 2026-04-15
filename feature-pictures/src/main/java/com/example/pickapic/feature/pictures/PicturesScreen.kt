@@ -42,14 +42,15 @@ import com.example.pickapic.uikit.theme.Shapes
 
 @Composable
 fun PicturesScreenRoute(
-    viewModel: PicturesViewModel = hiltViewModel()
+    viewModel: PicturesViewModel = hiltViewModel(),
+    onPictureClick: (String) -> Unit
 ) {
     val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
     PicturesScreen(
         state = uiState,
         onPictureLongClick = viewModel::onPicturePreview,
         onPreviewDismiss = viewModel::onDismissPreview,
-        onPictureClick = viewModel::onPictureClick,
+        onPictureClick = onPictureClick,
         onErrorDismiss = viewModel::onErrorDismiss
     )
 }
@@ -57,7 +58,7 @@ fun PicturesScreenRoute(
 @Composable
 private fun PicturesScreen(
     state: PicturesScreenState,
-    onPictureClick: () -> Unit,
+    onPictureClick: (String) -> Unit,
     onPictureLongClick: (String) -> Unit,
     onPreviewDismiss: () -> Unit,
     onErrorDismiss: () -> Unit
@@ -116,7 +117,7 @@ private fun LoadingPlaceholder() {
 private fun PicturesLoadedScreen(
     pictures: PicturesUiModel,
     previewUrl: String?,
-    onPictureClick: () -> Unit,
+    onPictureClick: (String) -> Unit,
     onPictureLongClick: (String) -> Unit,
     onPreviewDismiss: () -> Unit
 ) {
@@ -141,9 +142,11 @@ private fun PicturesLoadedScreen(
                 val pictureUrl = item.urls
                 PictureItem(
                     pictureUrl = pictureUrl.small,
-                    onClick = onPictureClick,
+                    onClick = {
+                        onPictureClick(pictureUrl.full)
+                    },
                     onLongClick = {
-                        onPictureLongClick(pictureUrl.regular)
+                        onPictureLongClick(pictureUrl.full)
                     }
                 )
             }

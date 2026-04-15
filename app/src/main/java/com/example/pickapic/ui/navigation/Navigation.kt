@@ -21,7 +21,7 @@ import com.example.pickapic.feature.pictures.PicturesScreenRoute
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = LoginRoute) {
+    NavHost(navController = navController, startDestination = HomeRoute) {
         composable<LoginRoute> {
             LoginScreen(navController = navController)
         }
@@ -29,10 +29,21 @@ fun Navigation() {
             RegistrationScreen(navController = navController)
         }
         composable<HomeRoute> {
-            HomeScreen(navController = navController)
+            HomeScreen(
+                onPerformSearch = {
+                    navController.navigate(PicturesRoute(topic = it))
+                },
+                onFavoriteButtonClick = {
+                    navController.navigate(FavouritePicRoute)
+                }
+            )
         }
         composable<PicturesRoute> {
-            PicturesScreenRoute()
+            PicturesScreenRoute(
+                onPictureClick = {
+                    navController.navigate(FullPicRoute(pictureUrl = it))
+                }
+            )
         }
         composable<FavouritePicRoute> {
             FavouritePicScreen()

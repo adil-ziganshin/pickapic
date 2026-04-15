@@ -1,11 +1,29 @@
 package com.example.pickapic.feature.home
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDefaults
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Favorite
@@ -21,29 +39,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.pickapic.core.navigation.FavouritePicRoute
-import com.example.pickapic.core.navigation.PicturesRoute
 import com.example.pickapic.core.util.TopicModel
 import com.example.pickapic.uikit.components.TitleCard
-import com.example.pickapic.uikit.theme.*
+import com.example.pickapic.uikit.theme.Pencil700
+import com.example.pickapic.uikit.theme.PickapicTheme
+import com.example.pickapic.uikit.theme.Shapes
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    onPerformSearch: (String) -> Unit,
+    onFavoriteButtonClick: () -> Unit
+) {
     PickapicTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = contentColorFor(SnackbarDefaults.backgroundColor)
                 .takeOrElse { LocalContentColor.current },
-            floatingActionButton = { FloatingActButton(navController) },
+            floatingActionButton = {
+                FloatingFavoritesButton(onClick = onFavoriteButtonClick)
+            },
             floatingActionButtonPosition = FabPosition.End
         ) {
             Column(
                 modifier = Modifier
             ) {
                 TitleCard(stringResource(id = R.string.home_title), Pencil700)
-                TopicsRow(navController)
-                SearchBar(navController)
+                TopicsRow(onTopicChosen = onPerformSearch)
+                SearchBar(onPerformSearch = onPerformSearch)
             }
         }
     }
@@ -58,24 +80,23 @@ private val topicsList = listOf(
 )
 
 @Composable
-private fun FloatingActButton(navController: NavController) {
+private fun FloatingFavoritesButton(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
-        onClick = {
-            navController.navigate(FavouritePicRoute)
-        },
-        text = { Text(text = "Favourites") },
+        onClick = onClick,
+        text = { Text(text = "Favorites") },
         icon = {
             Icon(
                 imageVector = Icons.Rounded.Favorite,
-                contentDescription = "Favourite pictures"
+                contentDescription = "Favorite pictures"
             )
         }
     )
 }
 
 @Composable
-private fun TopicsRow(navController: NavController) {
-
+private fun TopicsRow(
+    onTopicChosen: (topic: String) -> Unit
+) {
     Column(
         modifier = Modifier.padding(2.dp)
     ) {
@@ -96,7 +117,10 @@ private fun TopicsRow(navController: NavController) {
             itemsIndexed(
                 topicsList
             ) { _, item ->
-                TopicItem(item = item, navController = navController)
+                TopicItem(
+                    item = item,
+                    onClick = onTopicChosen
+                )
             }
         }
     }
@@ -104,7 +128,7 @@ private fun TopicsRow(navController: NavController) {
 
 @Composable
 private fun SearchBar(
-    navController: NavController
+    onPerformSearch: (String) -> Unit
 ) {
     val inputValue = remember { mutableStateOf(TextFieldValue()) }
     Surface(
@@ -141,7 +165,7 @@ private fun SearchBar(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
                     onClick = {
-                        navController.navigate(PicturesRoute(topic = inputValue.value.text))
+                        onPerformSearch(inputValue.value.text)
                     }
                 ) {
                     Icon(
@@ -156,7 +180,7 @@ private fun SearchBar(
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    navController.navigate(PicturesRoute(topic = inputValue.value.text))
+                    onPerformSearch(inputValue.value.text)
                 }
             ),
             colors = TextFieldDefaults.textFieldColors(
