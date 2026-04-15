@@ -16,6 +16,3 @@ object HomeRoute
 
 @Serializable
 object FavouritePicRoute
-
-@Serializable
-data class FullPicRoute(val pictureUrl: String)

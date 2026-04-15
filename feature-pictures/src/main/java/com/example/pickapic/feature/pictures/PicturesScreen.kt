@@ -1,12 +1,10 @@
 package com.example.pickapic.feature.pictures
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -17,7 +15,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.contentColorFor
@@ -26,31 +23,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.SubcomposeAsyncImage
-import com.example.pickapic.uikit.components.AnimatedBoxIcon
 import com.example.pickapic.uikit.components.TitleCard
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
-import com.example.pickapic.uikit.theme.Shapes
 
 @Composable
 fun PicturesScreenRoute(
-    viewModel: PicturesViewModel = hiltViewModel(),
-    onPictureClick: (String) -> Unit
+    viewModel: PicturesViewModel = hiltViewModel()
 ) {
     val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
     PicturesScreen(
         state = uiState,
-        onPictureLongClick = viewModel::onPicturePreview,
+        onPictureLongClick = {},
         onPreviewDismiss = viewModel::onDismissPreview,
-        onPictureClick = onPictureClick,
+        onPictureClick = viewModel::onPicturePreview,
         onErrorDismiss = viewModel::onErrorDismiss
     )
 }
@@ -126,6 +116,9 @@ private fun PicturesLoadedScreen(
     if (previewUrl != null) {
         PicturePreviewDialog(
             imageUrl = previewUrl,
+            onButtonClick = {
+                onPictureClick(previewUrl)
+            },
             onDismiss = onPreviewDismiss
         )
     }
@@ -155,36 +148,6 @@ private fun PicturesLoadedScreen(
 }
 
 @Composable
-private fun PicturePreviewDialog(
-    imageUrl: String,
-    onDismiss: () -> Unit,
-) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        Surface(
-            modifier = Modifier.wrapContentSize(),
-            shape = Shapes.large,
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier.wrapContentSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                SubcomposeAsyncImage(
-                    model = imageUrl,
-                    contentDescription = null,
-                    loading = { AnimatedBoxIcon(boxColor = Color.White) },
-                    modifier = Modifier
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun ErrorDialog(
     message: String,
     onDismiss: () -> Unit
@@ -197,6 +160,6 @@ private fun ErrorDialog(
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(android.R.string.ok))
             }
-        },
+        }
     )
 }
