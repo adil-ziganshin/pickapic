@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data_available">Could not load pictures</string>
+    <string name="problem_occurred">We have a problem</string>
+    <string name="set_this_wallpaper">Set this wallpaper</string>
+    <string name="wallpaper_set_failed">Could not set wallpaper</string>
+</resources>

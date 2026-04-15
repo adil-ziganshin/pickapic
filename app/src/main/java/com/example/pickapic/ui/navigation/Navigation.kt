@@ -16,7 +16,7 @@ import com.example.pickapic.feature.auth.RegistrationScreen
 import com.example.pickapic.feature.favorites.FavouritePicScreen
 import com.example.pickapic.feature.home.HomeScreen
 import com.example.pickapic.feature.pictures.FullPicScreen
-import com.example.pickapic.feature.pictures.PicturesScreen
+import com.example.pickapic.feature.pictures.PicturesScreenRoute
 
 @Composable
 fun Navigation() {
@@ -31,9 +31,8 @@ fun Navigation() {
         composable<HomeRoute> {
             HomeScreen(navController = navController)
         }
-        composable<PicturesRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<PicturesRoute>()
-            PicturesScreen(topic = route.topic)
+        composable<PicturesRoute> {
+            PicturesScreenRoute()
         }
         composable<FavouritePicRoute> {
             FavouritePicScreen()

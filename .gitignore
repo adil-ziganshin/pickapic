@@ -1,24 +1,41 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# Kotlin files
+.kotlin
+
+# generated files
+bin/
+gen/
+bin/AndroidManifest.xml
+
+# Local configuration file (sdk path, etc)
+local.properties:
+
+# Eclipse files
+.classpath
+.project
+
+# IDEA
+.idea
 *.iml
-.gradle
+/build.xml
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/proguard_logs/
+
+# gradle
+**/build
+.gradle
+
+#enc
+encryptUtil/*
+/captures/
+
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-/.idea/AndroidProjectSystem.xml
-/.idea/appInsightsSettings.xml
-/.idea/compiler.xml
-/.idea/deploymentTargetSelector.xml
-/.idea/gradle.xml
-/.idea/misc.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/runConfigurations.xml
-/.idea/vcs.xml
