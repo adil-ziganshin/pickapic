@@ -1,19 +1,11 @@
 package com.example.pickapic.feature.pictures
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -21,7 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -30,44 +21,46 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.contentColorFor
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import com.example.pickapic.uikit.components.AnimatedBoxIcon
 import com.example.pickapic.uikit.components.TitleCard
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
 import com.example.pickapic.uikit.theme.Shapes
-import kotlinx.coroutines.delay
 
 @Composable
 fun PicturesScreenRoute(
     viewModel: PicturesViewModel = hiltViewModel()
 ) {
-    val uiState: PicturesViewModel.PicturesScreenState by viewModel.uiState.collectAsState()
-    PicturesScreen(state = uiState)
+    val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
+    PicturesScreen(
+        state = uiState,
+        onPictureLongClick = viewModel::onPicturePreview,
+        onPreviewDismiss = viewModel::onDismissPreview,
+        onPictureClick = viewModel::onPictureClick,
+        onErrorDismiss = viewModel::onErrorDismiss
+    )
 }
 
 @Composable
 private fun PicturesScreen(
-    state: PicturesViewModel.PicturesScreenState
+    state: PicturesScreenState,
+    onPictureClick: () -> Unit,
+    onPictureLongClick: (String) -> Unit,
+    onPreviewDismiss: () -> Unit,
+    onErrorDismiss: () -> Unit
 ) {
     PickapicTheme {
         Scaffold(
@@ -81,18 +74,27 @@ private fun PicturesScreen(
                     color = Pencil700,
                 )
                 when (state) {
-                    is PicturesViewModel.PicturesScreenState.Empty -> Text(
+                    is PicturesScreenState.Empty -> Text(
                         text = stringResource(id = R.string.no_data_available),
                         modifier = Modifier.padding(16.dp),
                     )
 
-                    is PicturesViewModel.PicturesScreenState.Loading -> LoadingPlaceholder()
+                    is PicturesScreenState.Loading -> LoadingPlaceholder()
 
-                    is PicturesViewModel.PicturesScreenState.Error ->
-                        ErrorDialog(message = state.message)
+                    is PicturesScreenState.Error ->
+                        ErrorDialog(
+                            message = state.message,
+                            onDismiss = onErrorDismiss
+                        )
 
-                    is PicturesViewModel.PicturesScreenState.Loaded ->
-                        PicturesLoadedScreen(pictures = state.data)
+                    is PicturesScreenState.Loaded ->
+                        PicturesLoadedScreen(
+                            pictures = state.data,
+                            previewUrl = state.previewUrl,
+                            onPictureLongClick = onPictureLongClick,
+                            onPreviewDismiss = onPreviewDismiss,
+                            onPictureClick = onPictureClick
+                        )
                 }
             }
         }
@@ -101,24 +103,29 @@ private fun PicturesScreen(
 
 @Composable
 private fun LoadingPlaceholder() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            modifier = Modifier.align(alignment = Alignment.Center)
+        )
     }
 }
 
 @Composable
-private fun PicturesLoadedScreen(pictures: PicturesUiModel) {
-    var previewUrl by remember { mutableStateOf<String?>(null) }
+private fun PicturesLoadedScreen(
+    pictures: PicturesUiModel,
+    previewUrl: String?,
+    onPictureClick: () -> Unit,
+    onPictureLongClick: (String) -> Unit,
+    onPreviewDismiss: () -> Unit
+) {
     val staggeredGridState = rememberLazyStaggeredGridState()
 
-    previewUrl?.let { url ->
+    if (previewUrl != null) {
         PicturePreviewDialog(
-            imageUrl = url,
-            onDismiss = { previewUrl = null },
+            imageUrl = previewUrl,
+            onDismiss = onPreviewDismiss
         )
     }
 
@@ -134,8 +141,10 @@ private fun PicturesLoadedScreen(pictures: PicturesUiModel) {
                 val pictureUrl = item.urls
                 PictureItem(
                     pictureUrl = pictureUrl.small,
-                    onClick = {},
-                    onLongClick = { previewUrl = pictureUrl.regular }
+                    onClick = onPictureClick,
+                    onLongClick = {
+                        onPictureLongClick(pictureUrl.regular)
+                    }
                 )
             }
         },
@@ -147,8 +156,6 @@ private fun PicturePreviewDialog(
     imageUrl: String,
     onDismiss: () -> Unit,
 ) {
-    var likedOverlay by remember { mutableStateOf(false) }
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -156,93 +163,37 @@ private fun PicturePreviewDialog(
         Surface(
             modifier = Modifier.wrapContentSize(),
             shape = Shapes.large,
+            color = Color.Transparent
         ) {
             Column(
                 modifier = Modifier.wrapContentSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(modifier = Modifier.wrapContentSize()) {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onDoubleTap = { likedOverlay = true },
-                                )
-                            },
-                    )
-                    if (likedOverlay) {
-                        AnimatedHeartIcon(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(64.dp),
-                            heartSize = 64.dp,
-                            heartColor = Color.White,
-                        )
-                        LaunchedEffect(Unit) {
-                            delay(800)
-                            likedOverlay = false
-                        }
-                    }
-                }
+                SubcomposeAsyncImage(
+                    model = imageUrl,
+                    contentDescription = null,
+                    loading = { AnimatedBoxIcon(boxColor = Color.White) },
+                    modifier = Modifier
+                )
             }
         }
     }
 }
 
 @Composable
-private fun ErrorDialog(message: String) {
-    var visible by remember { mutableStateOf(true) }
-    if (!visible) return
-
+private fun ErrorDialog(
+    message: String,
+    onDismiss: () -> Unit
+) {
     AlertDialog(
-        onDismissRequest = { visible = false },
+        onDismissRequest = onDismiss,
         title = { Text(text = stringResource(R.string.problem_occurred)) },
         text = { Text(message) },
         confirmButton = {
-            TextButton(onClick = { visible = false }) {
+            TextButton(onClick = onDismiss) {
                 Text(text = stringResource(android.R.string.ok))
             }
         },
     )
-}
-
-@Composable
-private fun AnimatedHeartIcon(
-    modifier: Modifier = Modifier,
-    heartColor: Color = Color.Red,
-    heartSize: Dp = 128.dp,
-) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val size by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.5f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 400),
-            repeatMode = RepeatMode.Reverse,
-        ),
-    )
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 400),
-            repeatMode = RepeatMode.Reverse,
-        ),
-    )
-
-    Box(
-        modifier = modifier.size(heartSize * size),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Favorite,
-            contentDescription = null,
-            tint = heartColor.copy(alpha = alpha),
-            modifier = Modifier.size(heartSize * size),
-        )
-    }
 }

@@ -1,6 +1,7 @@
 package com.example.pickapic.feature.pictures
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,7 @@ class PicturesViewModel @Inject constructor(
     private val repository: PictureRepositoryImpl
 ) : ViewModel() {
 
+    private val tag = "PicturesViewModel"
     val topic: String = savedStateHandle.get<String>("topic") ?: "Unknown"
     private val _uiState = MutableStateFlow<PicturesScreenState>(
         PicturesScreenState.Empty(topic = topic)
@@ -31,6 +33,33 @@ class PicturesViewModel @Inject constructor(
         fetchPictures()
     }
 
+    fun onPictureClick() {
+
+    }
+
+    fun onErrorDismiss() {
+        _uiState.value = PicturesScreenState.Empty(topic = topic)
+    }
+
+    fun onPicturePreview(pictureUrl: String) {
+        val state = uiState.value
+        if (state is PicturesScreenState.Loaded) {
+            _uiState.value = state.copy(previewUrl = pictureUrl)
+        } else {
+            Log.d(tag, "onPicturePreview: wrong screen state")
+        }
+    }
+
+    fun onDismissPreview() {
+        val state = uiState.value
+        if (state is PicturesScreenState.Loaded) {
+            _uiState.value = state.copy(previewUrl = null)
+        } else {
+            Log.d(tag, "onPicturePreview: wrong screen state")
+        }
+    }
+
+
     private fun fetchPictures() {
         _uiState.value = PicturesScreenState.Loading(topic = topic)
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,7 +67,7 @@ class PicturesViewModel @Inject constructor(
                 val response = repository.getData(topic)
                 _uiState.value = PicturesScreenState.Loaded(
                     topic = topic,
-                    PicturesUiModel(
+                    data = PicturesUiModel(
                         pictures = response.results
                     )
                 )
@@ -50,25 +79,6 @@ class PicturesViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    sealed interface PicturesScreenState {
-
-        val topic: String
-
-        data class Empty(override val topic: String) : PicturesScreenState
-
-        data class Loading(override val topic: String) : PicturesScreenState
-
-        data class Loaded(
-            override val topic: String,
-            val data: PicturesUiModel
-        ) : PicturesScreenState
-
-        data class Error(
-            override val topic: String,
-            val message: String
-        ) : PicturesScreenState
     }
 
     private fun onQueryLimitReached() {
