@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pickapic.core.data.PictureRepositoryImpl
+import com.example.pickapic.wallpaper.WallpaperInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class PicturesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: PictureRepositoryImpl,
+    private val wallpaperInteractor: WallpaperInteractor
 ) : ViewModel() {
 
     private val tag = "PicturesViewModel"
@@ -37,10 +39,36 @@ class PicturesViewModel @Inject constructor(
         _uiState.value = PicturesScreenState.Empty(topic = topic)
     }
 
-    fun onPicturePreview(pictureUrl: String) {
+    fun onSetWallpaper(pictureUrl: String) {
+        viewModelScope.launch {
+            val state = uiState.value
+            if (state is PicturesScreenState.Loaded) {
+                _uiState.value = state.copy(preview = state.preview?.copy(settingWallpaper = true))
+            }
+            val setWallpaperResult = wallpaperInteractor.setWallpaper(pictureUrl = pictureUrl)
+            setWallpaperResult.fold(
+                onSuccess = {
+                    val state = uiState.value
+                    if (state is PicturesScreenState.Loaded) {
+                        _uiState.value = state.copy(
+                            preview = state.preview?.copy(
+                                isWallpaperSet = true,
+                                settingWallpaper = false
+                            )
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.value = PicturesScreenState.Error(topic = topic, message = it.message)
+                }
+            )
+        }
+    }
+
+    fun onPicturePreview(previewState: PreviewState) {
         val state = uiState.value
         if (state is PicturesScreenState.Loaded) {
-            _uiState.value = state.copy(previewUrl = pictureUrl)
+            _uiState.value = state.copy(preview = previewState)
         } else {
             Log.d(tag, "onPicturePreview: wrong screen state")
         }
@@ -49,7 +77,7 @@ class PicturesViewModel @Inject constructor(
     fun onDismissPreview() {
         val state = uiState.value
         if (state is PicturesScreenState.Loaded) {
-            _uiState.value = state.copy(previewUrl = null)
+            _uiState.value = state.copy(preview = null)
         } else {
             Log.d(tag, "onPicturePreview: wrong screen state")
         }

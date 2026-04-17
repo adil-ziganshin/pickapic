@@ -13,14 +13,21 @@ sealed interface PicturesScreenState {
     data class Loaded(
         override val topic: String,
         val data: PicturesUiModel,
-        val previewUrl: String? = null
+        val preview: PreviewState? = null
     ) : PicturesScreenState
 
     data class Error(
         override val topic: String,
-        val message: String
+        val message: String?
     ) : PicturesScreenState
 }
+
+data class PreviewState(
+    val previewUrl: String,
+    val fullPictureUrl: String,
+    val settingWallpaper: Boolean = false,
+    val isWallpaperSet: Boolean = false
+)
 
 data class PicturesUiModel(
     val pictures: List<Result>

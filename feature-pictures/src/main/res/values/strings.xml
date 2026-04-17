@@ -3,5 +3,6 @@
     <string name="no_data_available">Could not load pictures</string>
     <string name="problem_occurred">Some problem occurred</string>
     <string name="set_this_wallpaper">Set this wallpaper</string>
+    <string name="wallpaper_set">Wallpaper been set</string>
     <string name="wallpaper_set_failed">Could not set wallpaper</string>
 </resources>

@@ -41,16 +41,18 @@ fun PicturesScreenRoute(
         onPictureLongClick = {},
         onPreviewDismiss = viewModel::onDismissPreview,
         onPictureClick = viewModel::onPicturePreview,
-        onErrorDismiss = viewModel::onErrorDismiss
+        onErrorDismiss = viewModel::onErrorDismiss,
+        onSetWallpaper = viewModel::onSetWallpaper
     )
 }
 
 @Composable
 private fun PicturesScreen(
     state: PicturesScreenState,
-    onPictureClick: (String) -> Unit,
+    onPictureClick: (PreviewState) -> Unit,
     onPictureLongClick: (String) -> Unit,
     onPreviewDismiss: () -> Unit,
+    onSetWallpaper: (String) -> Unit,
     onErrorDismiss: () -> Unit
 ) {
     PickapicTheme {
@@ -81,10 +83,11 @@ private fun PicturesScreen(
                     is PicturesScreenState.Loaded ->
                         PicturesLoadedScreen(
                             pictures = state.data,
-                            previewUrl = state.previewUrl,
+                            previewState = state.preview,
                             onPictureLongClick = onPictureLongClick,
                             onPreviewDismiss = onPreviewDismiss,
-                            onPictureClick = onPictureClick
+                            onPictureClick = onPictureClick,
+                            onSetWallpaper = onSetWallpaper
                         )
                 }
             }
@@ -106,18 +109,19 @@ private fun LoadingPlaceholder() {
 @Composable
 private fun PicturesLoadedScreen(
     pictures: PicturesUiModel,
-    previewUrl: String?,
-    onPictureClick: (String) -> Unit,
+    previewState: PreviewState?,
+    onPictureClick: (PreviewState) -> Unit,
     onPictureLongClick: (String) -> Unit,
-    onPreviewDismiss: () -> Unit
+    onPreviewDismiss: () -> Unit,
+    onSetWallpaper: (String) -> Unit
 ) {
     val staggeredGridState = rememberLazyStaggeredGridState()
 
-    if (previewUrl != null) {
+    if (previewState != null) {
         PicturePreviewDialog(
-            imageUrl = previewUrl,
+            previewState = previewState,
             onButtonClick = {
-                onPictureClick(previewUrl)
+                onSetWallpaper(previewState.fullPictureUrl)
             },
             onDismiss = onPreviewDismiss
         )
@@ -136,7 +140,12 @@ private fun PicturesLoadedScreen(
                 PictureItem(
                     pictureUrl = pictureUrl.small,
                     onClick = {
-                        onPictureClick(pictureUrl.full)
+                        onPictureClick(
+                            PreviewState(
+                                previewUrl = pictureUrl.regular,
+                                fullPictureUrl = pictureUrl.full
+                            )
+                        )
                     },
                     onLongClick = {
                         onPictureLongClick(pictureUrl.full)
@@ -149,13 +158,13 @@ private fun PicturesLoadedScreen(
 
 @Composable
 private fun ErrorDialog(
-    message: String,
+    message: String?,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = stringResource(R.string.problem_occurred)) },
-        text = { Text(message) },
+        text = { Text(message ?: "Unexpected error" ) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(android.R.string.ok))

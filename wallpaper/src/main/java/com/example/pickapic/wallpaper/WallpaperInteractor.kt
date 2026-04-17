@@ -1,9 +1,6 @@
 package com.example.pickapic.wallpaper
 
-import android.app.WallpaperManager
+interface WallpaperInteractor {
 
-class WallpaperInteractor(
-    private val manager: WallpaperManager
-) {
-    
+    suspend fun setWallpaper(pictureUrl: String): Result<Unit>
 }
