@@ -11,7 +11,7 @@ import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
 
 @Composable
-fun FavouritePicScreen() {
+fun FavoritePicScreen() {
     PickapicTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.primary,

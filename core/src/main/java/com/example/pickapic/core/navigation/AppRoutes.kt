@@ -15,4 +15,4 @@ data class PicturesRoute(val topic: String)
 object HomeRoute
 
 @Serializable
-object FavouritePicRoute
+object FavoritePicRoute
