@@ -1,7 +1,13 @@
 package com.example.pickapic.feature.pictures
 
 import android.content.Intent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
@@ -42,6 +48,14 @@ internal fun PicturePreviewDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         var isPictureShown by remember { mutableStateOf(false) }
+        val scale by rememberInfiniteTransition().animateFloat(
+            initialValue = 1f,
+            targetValue = 1.5f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(600, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
         val context = LocalContext.current
         Surface(
             modifier = Modifier.wrapContentSize(),
@@ -55,7 +69,12 @@ internal fun PicturePreviewDialog(
                     model = previewState.previewUrl,
                     contentDescription = null,
                     loading = { AnimatedBoxIcon(boxColor = Color.White) },
-                    onSuccess = { isPictureShown = true }
+                    onSuccess = { isPictureShown = true },
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = if (previewState.settingWallpaper) scale else 1f,
+                            scaleY = if (previewState.settingWallpaper) scale else 1f
+                        )
                 )
                 if (!previewState.isWallpaperSet) {
                     ButtonGradientSecondary(
