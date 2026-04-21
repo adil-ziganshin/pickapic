@@ -14,8 +14,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -38,7 +36,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun CenteredHeartIcon(
     isVisible: Boolean,
-    onAnimationFinished: () -> Unit
+    onAnimationFinished: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(isVisible) {
         if (isVisible) {
@@ -48,7 +47,7 @@ fun CenteredHeartIcon(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(

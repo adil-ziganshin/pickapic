@@ -91,7 +91,8 @@ internal fun PicturePreviewDialog(
                 )
                 CenteredHeartIcon(
                     isVisible = showHeart,
-                    onAnimationFinished = { showHeart = false }
+                    onAnimationFinished = { showHeart = false },
+                    modifier = Modifier.matchParentSize()
                 )
                 if (!previewState.isWallpaperSet) {
                     ButtonGradientSecondary(
