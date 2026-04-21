@@ -1,7 +1,6 @@
-package com.example.pickapic.feature.favorites.domain
+package com.gsgroup.feature_favorites_api
 
 data class FavoritePicture(
-    val id: Long,
     val previewUrl: String,
     val fullPicUrl: String,
     val smallUrl: String,

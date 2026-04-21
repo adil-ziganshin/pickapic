@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pickapic.core.data.PictureRepositoryImpl
 import com.example.pickapic.wallpaper.WallpaperInteractor
+import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
+import com.gsgroup.feature_favorites_api.FavoritePicture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class PicturesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: PictureRepositoryImpl,
-    private val wallpaperInteractor: WallpaperInteractor
+    private val wallpaperInteractor: WallpaperInteractor,
+    private val addToFavoritesUseCase: AddToFavoritesUseCase
 ) : ViewModel() {
 
     private val tag = "PicturesViewModel"
@@ -69,6 +72,19 @@ class PicturesViewModel @Inject constructor(
             _uiState.value = state.copy(preview = previewState)
         } else {
             Log.d(tag, "onPicturePreview: wrong screen state")
+        }
+    }
+
+    fun onPreviewPictureDoubleTap(previewState: PreviewState) {
+        viewModelScope.launch {
+            addToFavoritesUseCase.invoke(
+                picture = FavoritePicture(
+                    previewUrl = previewState.previewUrl,
+                    fullPicUrl = previewState.fullPictureUrl,
+                    smallUrl = previewState.smallUrl,
+                    topic = topic
+                )
+            )
         }
     }
 

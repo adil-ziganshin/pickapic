@@ -1,5 +1,6 @@
 package com.example.pickapic.core.util
 
+// TODO: Hide this
 class Constants {
     companion object {
         const val BASE_URL = "https://api.unsplash.com/search/"

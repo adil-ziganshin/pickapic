@@ -23,6 +23,7 @@ sealed interface PicturesScreenState {
 }
 
 data class PreviewState(
+    val smallUrl: String,
     val previewUrl: String,
     val fullPictureUrl: String,
     val settingWallpaper: Boolean = false,

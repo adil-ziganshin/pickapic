@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
@@ -28,12 +30,14 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
 import com.example.pickapic.uikit.components.AnimatedBoxIcon
 import com.example.pickapic.uikit.components.ButtonGradientSecondary
+import com.example.pickapic.uikit.components.CenteredHeartIcon
 import com.example.pickapic.uikit.theme.Shapes
 
 @Composable
 internal fun PicturePreviewDialog(
     previewState: PreviewState,
     onButtonClick: () -> Unit,
+    onDoubleTap: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val enabled = !previewState.isWallpaperSet
@@ -43,6 +47,7 @@ internal fun PicturePreviewDialog(
     } else {
         stringResource(R.string.wallpaper_set)
     }
+    var showHeart by remember { mutableStateOf(false) }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -75,6 +80,18 @@ internal fun PicturePreviewDialog(
                             scaleX = if (previewState.settingWallpaper) scale else 1f,
                             scaleY = if (previewState.settingWallpaper) scale else 1f
                         )
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onDoubleTap = {
+                                    onDoubleTap()
+                                    showHeart = true
+                                }
+                            )
+                        }
+                )
+                CenteredHeartIcon(
+                    isVisible = showHeart,
+                    onAnimationFinished = { showHeart = false }
                 )
                 if (!previewState.isWallpaperSet) {
                     ButtonGradientSecondary(

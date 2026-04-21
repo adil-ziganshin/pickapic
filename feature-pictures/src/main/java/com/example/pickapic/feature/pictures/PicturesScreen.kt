@@ -41,6 +41,7 @@ fun PicturesScreenRoute(
         onPictureLongClick = {},
         onPreviewDismiss = viewModel::onDismissPreview,
         onPictureClick = viewModel::onPicturePreview,
+        onPictureDoubleTap = viewModel::onPreviewPictureDoubleTap,
         onErrorDismiss = viewModel::onErrorDismiss,
         onSetWallpaper = viewModel::onSetWallpaper
     )
@@ -51,6 +52,7 @@ private fun PicturesScreen(
     state: PicturesScreenState,
     onPictureClick: (PreviewState) -> Unit,
     onPictureLongClick: (String) -> Unit,
+    onPictureDoubleTap: (PreviewState) -> Unit,
     onPreviewDismiss: () -> Unit,
     onSetWallpaper: (String) -> Unit,
     onErrorDismiss: () -> Unit
@@ -87,7 +89,8 @@ private fun PicturesScreen(
                             onPictureLongClick = onPictureLongClick,
                             onPreviewDismiss = onPreviewDismiss,
                             onPictureClick = onPictureClick,
-                            onSetWallpaper = onSetWallpaper
+                            onSetWallpaper = onSetWallpaper,
+                            onPictureDoubleTap = onPictureDoubleTap
                         )
                 }
             }
@@ -112,6 +115,7 @@ private fun PicturesLoadedScreen(
     previewState: PreviewState?,
     onPictureClick: (PreviewState) -> Unit,
     onPictureLongClick: (String) -> Unit,
+    onPictureDoubleTap: (PreviewState) -> Unit,
     onPreviewDismiss: () -> Unit,
     onSetWallpaper: (String) -> Unit
 ) {
@@ -122,6 +126,9 @@ private fun PicturesLoadedScreen(
             previewState = previewState,
             onButtonClick = {
                 onSetWallpaper(previewState.fullPictureUrl)
+            },
+            onDoubleTap = {
+                onPictureDoubleTap(previewState)
             },
             onDismiss = onPreviewDismiss
         )
@@ -143,7 +150,8 @@ private fun PicturesLoadedScreen(
                         onPictureClick(
                             PreviewState(
                                 previewUrl = pictureUrl.regular,
-                                fullPictureUrl = pictureUrl.full
+                                fullPictureUrl = pictureUrl.full,
+                                smallUrl = pictureUrl.small
                             )
                         )
                     },

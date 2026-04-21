@@ -2,10 +2,12 @@ package com.example.pickapic.feature.favorites.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.pickapic.feature.favorites.data.AddToFavoritesUseCaseImpl
 import com.example.pickapic.feature.favorites.data.FavoritePictureDatabase
-import com.example.pickapic.feature.favorites.domain.FavoritePicturesRepository
+import com.example.pickapic.feature.favorites.data.FavoritePicturesRepository
 import com.example.pickapic.feature.favorites.data.FavoritePicturesRepositoryImpl
 import com.example.pickapic.feature.favorites.data.PictureDao
+import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -16,7 +18,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface FavoritesFeatureModule {
+object FavoritesDatabaseModule {
 
     @Provides
     @Singleton
@@ -29,10 +31,20 @@ interface FavoritesFeatureModule {
     fun providePictureDao(db: FavoritePictureDatabase): PictureDao {
         return db.imageDao()
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface FavoritesBindingModule {
 
     @Binds
     @Singleton
     fun bindFavoritePicturesRepository(
         impl: FavoritePicturesRepositoryImpl
     ): FavoritePicturesRepository
+
+    @Binds
+    fun bindAddToFavoritesUseCase(
+        impl: AddToFavoritesUseCaseImpl
+    ): AddToFavoritesUseCase
 }

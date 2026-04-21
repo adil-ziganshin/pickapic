@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.pickapic.core.util.TopicModel
+import com.example.pickapic.feature.home.TopicModel
 import com.example.pickapic.uikit.theme.Shapes
 
 @OptIn(ExperimentalMaterialApi::class)

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.pickapic.core.util.TopicModel
+import com.example.pickapic.feature.home.TopicModel
 import com.example.pickapic.uikit.components.TitleCard
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme

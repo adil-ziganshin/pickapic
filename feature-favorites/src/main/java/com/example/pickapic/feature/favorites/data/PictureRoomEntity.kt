@@ -2,7 +2,7 @@ package com.example.pickapic.feature.favorites.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.pickapic.feature.favorites.domain.FavoritePicture
+import com.gsgroup.feature_favorites_api.FavoritePicture
 
 @Entity(tableName = "pictures")
 data class PictureRoomEntity(
@@ -14,12 +14,16 @@ data class PictureRoomEntity(
     val topic: String
 )
 
-fun PictureRoomEntity.toFavoritePicture(): FavoritePicture {
-    return FavoritePicture(
-        id = this.id,
-        previewUrl = this.previewUrl,
-        fullPicUrl = this.fullPicUrl,
-        smallUrl = this.smallUrl,
-        topic = this.topic
-    )
-}
+fun PictureRoomEntity.toFavoritePicture() = FavoritePicture(
+    previewUrl = this.previewUrl,
+    fullPicUrl = this.fullPicUrl,
+    smallUrl = this.smallUrl,
+    topic = this.topic
+)
+
+fun FavoritePicture.toRoomEntity() = PictureRoomEntity(
+    previewUrl = this.previewUrl,
+    fullPicUrl = this.fullPicUrl,
+    smallUrl = this.smallUrl,
+    topic = this.topic
+)
