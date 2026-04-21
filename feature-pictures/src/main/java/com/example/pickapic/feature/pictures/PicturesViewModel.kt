@@ -1,6 +1,5 @@
 package com.example.pickapic.feature.pictures
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -17,7 +16,6 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
-@SuppressLint("StaticFieldLeak")
 class PicturesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: PictureRepositoryImpl,

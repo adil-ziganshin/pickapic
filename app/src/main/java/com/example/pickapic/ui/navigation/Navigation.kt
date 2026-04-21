@@ -11,7 +11,7 @@ import com.example.pickapic.core.navigation.PicturesRoute
 import com.example.pickapic.core.navigation.RegistrationRoute
 import com.example.pickapic.feature.auth.LoginScreen
 import com.example.pickapic.feature.auth.RegistrationScreen
-import com.example.pickapic.feature.favorites.FavoritePicScreen
+import com.example.pickapic.feature.favorites.ui.FavoritePicScreen
 import com.example.pickapic.feature.home.HomeScreen
 import com.example.pickapic.feature.pictures.PicturesScreenRoute
 
