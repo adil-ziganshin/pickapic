@@ -5,6 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pickapic.core.data.PictureRepositoryImpl
+import com.example.pickapic.uikit.pictures.PictureUiItem
+import com.example.pickapic.uikit.pictures.PicturesScreenState
+import com.example.pickapic.uikit.pictures.PicturesUiModel
+import com.example.pickapic.uikit.pictures.PreviewState
 import com.example.pickapic.wallpaper.WallpaperInteractor
 import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
 import com.gsgroup.feature_favorites_api.FavoritePicture
@@ -27,8 +31,10 @@ class PicturesViewModel @Inject constructor(
 
     private val tag = "PicturesViewModel"
     val topic: String = savedStateHandle.get<String>("topic") ?: "Unknown"
+    private val title: String = if (topic.length < 14) topic else "Search"
+
     private val _uiState = MutableStateFlow<PicturesScreenState>(
-        PicturesScreenState.Empty(topic = topic)
+        PicturesScreenState.Empty(title = title)
     )
     val uiState: StateFlow<PicturesScreenState> = _uiState.asStateFlow()
 
@@ -37,7 +43,7 @@ class PicturesViewModel @Inject constructor(
     }
 
     fun onErrorDismiss() {
-        _uiState.value = PicturesScreenState.Empty(topic = topic)
+        _uiState.value = PicturesScreenState.Empty(title = title)
     }
 
     fun onSetWallpaper(pictureUrl: String) {
@@ -49,10 +55,10 @@ class PicturesViewModel @Inject constructor(
             val setWallpaperResult = wallpaperInteractor.setWallpaper(pictureUrl = pictureUrl)
             setWallpaperResult.fold(
                 onSuccess = {
-                    val state = uiState.value
-                    if (state is PicturesScreenState.Loaded) {
-                        _uiState.value = state.copy(
-                            preview = state.preview?.copy(
+                    val currentState = uiState.value
+                    if (currentState is PicturesScreenState.Loaded) {
+                        _uiState.value = currentState.copy(
+                            preview = currentState.preview?.copy(
                                 isWallpaperSet = true,
                                 settingWallpaper = false
                             )
@@ -60,7 +66,7 @@ class PicturesViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    _uiState.value = PicturesScreenState.Error(topic = topic, message = it.message)
+                    _uiState.value = PicturesScreenState.Error(title = title, message = it.message)
                 }
             )
         }
@@ -99,14 +105,20 @@ class PicturesViewModel @Inject constructor(
 
 
     private fun fetchPictures() {
-        _uiState.value = PicturesScreenState.Loading(topic = topic)
+        _uiState.value = PicturesScreenState.Loading(title = title)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = repository.getData(topic)
                 _uiState.value = PicturesScreenState.Loaded(
-                    topic = topic,
+                    title = title,
                     data = PicturesUiModel(
-                        pictures = response.results
+                        pictures = response.results.map { result ->
+                            PictureUiItem(
+                                smallUrl = result.urls.small,
+                                regularUrl = result.urls.regular,
+                                fullUrl = result.urls.full
+                            )
+                        }
                     )
                 )
             } catch (e: Exception) {
@@ -121,14 +133,14 @@ class PicturesViewModel @Inject constructor(
 
     private fun onQueryLimitReached() {
         _uiState.value = PicturesScreenState.Error(
-            topic = topic,
+            title = title,
             message = "Query Limit Reached"
         )
     }
 
     private fun onErrorOccurred() {
         _uiState.value = PicturesScreenState.Error(
-            topic = topic,
+            title = title,
             message = "Something went wrong"
         )
     }

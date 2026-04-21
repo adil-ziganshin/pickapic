@@ -19,4 +19,7 @@ interface PictureDao {
 
     @Query("DELETE FROM Pictures")
     suspend fun clearAll()
+
+    @Query("DELETE FROM Pictures WHERE fullPicUrl = :fullPicUrl")
+    suspend fun deleteByFullPicUrl(fullPicUrl: String)
 }

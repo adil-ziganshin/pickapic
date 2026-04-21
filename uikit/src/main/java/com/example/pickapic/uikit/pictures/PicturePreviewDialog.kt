@@ -1,4 +1,4 @@
-package com.example.pickapic.feature.pictures
+package com.example.pickapic.uikit.pictures
 
 import android.content.Intent
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -28,11 +29,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
+import com.example.pickapic.uikit.R
 import com.example.pickapic.uikit.components.AnimatedBoxIcon
 import com.example.pickapic.uikit.components.ButtonGradientSecondary
 import com.example.pickapic.uikit.components.CenteredHeartIcon
 import com.example.pickapic.uikit.theme.Shapes
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun PicturePreviewDialog(
     previewState: PreviewState,

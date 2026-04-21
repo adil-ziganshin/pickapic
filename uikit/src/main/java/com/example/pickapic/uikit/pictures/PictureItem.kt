@@ -1,4 +1,4 @@
-package com.example.pickapic.feature.pictures
+package com.example.pickapic.uikit.pictures
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -20,7 +20,6 @@ fun PictureItem(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Box(
         modifier = modifier.combinedClickable(
             onClick = onClick,

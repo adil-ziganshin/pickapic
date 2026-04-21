@@ -8,4 +8,6 @@ interface FavoritePicturesRepository {
     fun fetchPictures(): Flow<List<FavoritePicture>>
 
     suspend fun addToFavorites(picture: FavoritePicture)
+
+    suspend fun removeFromFavorites(picture: FavoritePicture)
 }

@@ -1,29 +1,26 @@
 package com.example.pickapic.feature.favorites.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.res.stringResource
-import com.example.pickapic.feature.favorites.R
-import com.example.pickapic.uikit.components.TitleCard
-import com.example.pickapic.uikit.theme.Pencil700
-import com.example.pickapic.uikit.theme.PickapicTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pickapic.uikit.pictures.PicturesScreen
+import com.example.pickapic.uikit.pictures.PicturesScreenState
 
 @Composable
-fun FavoritePicScreen() {
-    PickapicTheme {
-        Scaffold(
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = contentColorFor(SnackbarDefaults.backgroundColor)
-                .takeOrElse { LocalContentColor.current }
-        ) {
-            Column(
-                modifier = Modifier
-            ) {
-                TitleCard(text = stringResource(id = R.string.fav_title), Pencil700)
-            }
-        }
-    }
+fun FavoritePicScreen(
+    viewModel: FavoritePicturesViewModel = hiltViewModel()
+) {
+    val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
+    PicturesScreen(
+        state = uiState,
+        onPictureClick = { previewState ->
+            viewModel.onPicturePreview(previewState)
+        },
+        onPictureLongClick = viewModel::onPictureLongClick,
+        onPictureDoubleTap = viewModel::onPreviewPictureDoubleTap,
+        onPreviewDismiss = viewModel::onDismissPreview,
+        onSetWallpaper = viewModel::onSetWallpaper,
+        onErrorDismiss = viewModel::onErrorDismiss
+    )
 }

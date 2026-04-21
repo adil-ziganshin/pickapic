@@ -24,4 +24,9 @@ class FavoritePicturesRepositoryImpl @Inject constructor(
         Log.d("FavoritePicturesRepositoryImpl", "addToFavorites")
         db.insertPicture(picture = picture.toRoomEntity())
     }
+
+    override suspend fun removeFromFavorites(picture: FavoritePicture) = withContext(Dispatchers.IO) {
+        Log.d("FavoritePicturesRepositoryImpl", "removeFromFavorites")
+        db.deleteByFullPicUrl(fullPicUrl = picture.fullPicUrl)
+    }
 }

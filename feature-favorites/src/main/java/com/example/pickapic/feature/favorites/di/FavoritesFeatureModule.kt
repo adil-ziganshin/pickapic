@@ -7,7 +7,9 @@ import com.example.pickapic.feature.favorites.data.FavoritePictureDatabase
 import com.example.pickapic.feature.favorites.data.FavoritePicturesRepository
 import com.example.pickapic.feature.favorites.data.FavoritePicturesRepositoryImpl
 import com.example.pickapic.feature.favorites.data.PictureDao
+import com.example.pickapic.feature.favorites.data.RemoveFromFavoritesUseCaseImpl
 import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
+import com.gsgroup.feature_favorites_api.RemoveFromFavoritesUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -47,4 +49,9 @@ interface FavoritesBindingModule {
     fun bindAddToFavoritesUseCase(
         impl: AddToFavoritesUseCaseImpl
     ): AddToFavoritesUseCase
+
+    @Binds
+    fun bindRemoveFromFavoritesUseCase(
+        impl: RemoveFromFavoritesUseCaseImpl
+    ): RemoveFromFavoritesUseCase
 }
