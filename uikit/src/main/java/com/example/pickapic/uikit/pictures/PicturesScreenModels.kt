@@ -1,6 +1,7 @@
 package com.example.pickapic.uikit.pictures
 
 data class PictureUiItem(
+    val thumbUrl: String,
     val smallUrl: String,
     val regularUrl: String,
     val fullUrl: String
@@ -11,6 +12,7 @@ data class PicturesUiModel(
 )
 
 data class PreviewState(
+    val thumbUrl: String,
     val smallUrl: String,
     val previewUrl: String,
     val fullPictureUrl: String,

@@ -11,6 +11,7 @@ data class PictureRoomEntity(
     val previewUrl: String,
     val fullPicUrl: String,
     val smallUrl: String,
+    val thumbUrl: String,
     val topic: String
 )
 
@@ -18,12 +19,14 @@ fun PictureRoomEntity.toFavoritePicture() = FavoritePicture(
     previewUrl = this.previewUrl,
     fullPicUrl = this.fullPicUrl,
     smallUrl = this.smallUrl,
-    topic = this.topic
+    topic = this.topic,
+    thumbUrl = this.thumbUrl
 )
 
 fun FavoritePicture.toRoomEntity() = PictureRoomEntity(
     previewUrl = this.previewUrl,
     fullPicUrl = this.fullPicUrl,
     smallUrl = this.smallUrl,
-    topic = this.topic
+    topic = this.topic,
+    thumbUrl = this.thumbUrl
 )

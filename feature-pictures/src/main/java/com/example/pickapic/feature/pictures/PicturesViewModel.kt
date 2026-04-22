@@ -88,6 +88,7 @@ class PicturesViewModel @Inject constructor(
                     previewUrl = previewState.previewUrl,
                     fullPicUrl = previewState.fullPictureUrl,
                     smallUrl = previewState.smallUrl,
+                    thumbUrl = previewState.thumbUrl,
                     topic = topic
                 )
             )
@@ -114,6 +115,7 @@ class PicturesViewModel @Inject constructor(
                     data = PicturesUiModel(
                         pictures = response.results.map { result ->
                             PictureUiItem(
+                                thumbUrl = result.urls.thumb,
                                 smallUrl = result.urls.small,
                                 regularUrl = result.urls.regular,
                                 fullUrl = result.urls.full

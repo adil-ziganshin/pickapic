@@ -117,13 +117,15 @@ class FavoritePicturesViewModel @Inject constructor(
     private fun FavoritePicture.toPictureUiItem() = PictureUiItem(
         smallUrl = smallUrl,
         regularUrl = previewUrl,
-        fullUrl = fullPicUrl
+        fullUrl = fullPicUrl,
+        thumbUrl = thumbUrl
     )
 
     private fun PictureUiItem.toFavoritePicture() = FavoritePicture(
         previewUrl = regularUrl,
         fullPicUrl = fullUrl,
         smallUrl = smallUrl,
+        thumbUrl = thumbUrl,
         topic = ""
     )
 
@@ -131,6 +133,7 @@ class FavoritePicturesViewModel @Inject constructor(
         previewUrl = previewUrl,
         fullPicUrl = fullPictureUrl,
         smallUrl = smallUrl,
+        thumbUrl = thumbUrl,
         topic = ""
     )
 }

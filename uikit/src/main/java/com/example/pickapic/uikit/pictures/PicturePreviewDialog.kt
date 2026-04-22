@@ -74,7 +74,7 @@ internal fun PicturePreviewDialog(
                 modifier = Modifier.wrapContentSize()
             ) {
                 SubcomposeAsyncImage(
-                    model = previewState.previewUrl,
+                    model = previewState.smallUrl,
                     contentDescription = null,
                     loading = { AnimatedBoxIcon(boxColor = Color.White) },
                     onSuccess = { isPictureShown = true },

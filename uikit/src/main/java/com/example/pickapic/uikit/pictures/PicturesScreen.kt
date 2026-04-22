@@ -128,13 +128,14 @@ private fun PicturesLoadedScreen(
                 key = { it.regularUrl },
             ) { item ->
                 PictureItem(
-                    pictureUrl = item.smallUrl,
+                    pictureUrl = item.thumbUrl,
                     onClick = {
                         onPictureClick(
                             PreviewState(
                                 previewUrl = item.regularUrl,
                                 fullPictureUrl = item.fullUrl,
-                                smallUrl = item.smallUrl
+                                smallUrl = item.smallUrl,
+                                thumbUrl = item.thumbUrl
                             )
                         )
                     },
