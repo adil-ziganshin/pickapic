@@ -19,6 +19,7 @@ fun PicturesScreenRoute(
         onPictureClick = viewModel::onPicturePreview,
         onPictureDoubleTap = viewModel::onPreviewPictureDoubleTap,
         onErrorDismiss = viewModel::onErrorDismiss,
-        onSetWallpaper = viewModel::onSetWallpaper
+        onSetWallpaper = viewModel::onSetWallpaper,
+        onLoadMore = viewModel::loadNextPage,
     )
 }

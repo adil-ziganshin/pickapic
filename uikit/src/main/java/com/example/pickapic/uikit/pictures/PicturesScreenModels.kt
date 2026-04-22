@@ -8,7 +8,9 @@ data class PictureUiItem(
 )
 
 data class PicturesUiModel(
-    val pictures: List<PictureUiItem>
+    val pictures: List<PictureUiItem>,
+    val isLoadingMore: Boolean = false,
+    val endReached: Boolean = false,
 )
 
 data class PreviewState(

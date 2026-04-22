@@ -9,6 +9,11 @@ interface PictureService {
     suspend fun getData(
         @Query("client_id") clientId: String = API_KEY,
         @Query("query") query: String,
-        @Query("per_page") perPage: Int = 30
+        @Query("page") page: Int = 1,
+        @Query("per_page") perPage: Int = DEFAULT_PER_PAGE
     ): PictureApiResponse
+
+    companion object {
+        const val DEFAULT_PER_PAGE = 30
+    }
 }

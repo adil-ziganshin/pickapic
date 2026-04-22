@@ -14,6 +14,7 @@ import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
 import com.gsgroup.feature_favorites_api.FavoritePicture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,8 +39,12 @@ class PicturesViewModel @Inject constructor(
     )
     val uiState: StateFlow<PicturesScreenState> = _uiState.asStateFlow()
 
+    private var currentPage: Int = 0
+    private var totalPages: Int = Int.MAX_VALUE
+    private var loadJob: Job? = null
+
     init {
-        fetchPictures()
+        fetchFirstPage()
     }
 
     fun onErrorDismiss() {
@@ -104,23 +109,66 @@ class PicturesViewModel @Inject constructor(
         }
     }
 
+    fun loadNextPage() {
+        val state = uiState.value as? PicturesScreenState.Loaded ?: return
+        if (state.data.isLoadingMore || state.data.endReached) return
+        if (loadJob?.isActive == true) return
+        if (currentPage >= totalPages) return
 
-    private fun fetchPictures() {
-        _uiState.value = PicturesScreenState.Loading(title = title)
-        viewModelScope.launch(Dispatchers.IO) {
+        _uiState.value = state.copy(data = state.data.copy(isLoadingMore = true))
+        loadJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.getData(topic)
+                val nextPage = currentPage + 1
+                val response = repository.getData(
+                    query = topic,
+                    page = nextPage,
+                    perPage = PER_PAGE
+                )
+                currentPage = nextPage
+                totalPages = response.totalPages
+
+                val currentState = uiState.value
+                if (currentState is PicturesScreenState.Loaded) {
+                    val existingKeys = currentState.data.pictures.mapTo(HashSet()) { it.regularUrl }
+                    val newItems = response.results
+                        .map { it.toUiItem() }
+                        .filter { existingKeys.add(it.regularUrl) }
+                    _uiState.value = currentState.copy(
+                        data = currentState.data.copy(
+                            pictures = currentState.data.pictures + newItems,
+                            isLoadingMore = false,
+                            endReached = currentPage >= totalPages || response.results.isEmpty()
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                handleLoadMoreError(e)
+            }
+        }
+    }
+
+    private fun fetchFirstPage() {
+        _uiState.value = PicturesScreenState.Loading(title = title)
+        currentPage = 0
+        totalPages = Int.MAX_VALUE
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val firstPage = 1
+                val response = repository.getData(
+                    query = topic,
+                    page = firstPage,
+                    perPage = PER_PAGE
+                )
+                currentPage = firstPage
+                totalPages = response.totalPages
+
                 _uiState.value = PicturesScreenState.Loaded(
                     title = title,
                     data = PicturesUiModel(
-                        pictures = response.results.map { result ->
-                            PictureUiItem(
-                                thumbUrl = result.urls.thumb,
-                                smallUrl = result.urls.small,
-                                regularUrl = result.urls.regular,
-                                fullUrl = result.urls.full
-                            )
-                        }
+                        pictures = response.results.map { it.toUiItem() },
+                        isLoadingMore = false,
+                        endReached = currentPage >= totalPages || response.results.isEmpty()
                     )
                 )
             } catch (e: Exception) {
@@ -130,6 +178,17 @@ class PicturesViewModel @Inject constructor(
                     onErrorOccurred()
                 }
             }
+        }
+    }
+
+    private fun handleLoadMoreError(e: Exception) {
+        val state = uiState.value
+        if (state is PicturesScreenState.Loaded) {
+            // Leave the existing feed, just stop the spinner so the user can retry on next scroll.
+            _uiState.value = state.copy(data = state.data.copy(isLoadingMore = false))
+        }
+        if (e is HttpException && e.code() == 429) {
+            onQueryLimitReached()
         }
     }
 
@@ -145,5 +204,17 @@ class PicturesViewModel @Inject constructor(
             title = title,
             message = "Something went wrong"
         )
+    }
+
+    private fun com.example.pickapic.core.data.Result.toUiItem(): PictureUiItem =
+        PictureUiItem(
+            thumbUrl = urls.thumb,
+            smallUrl = urls.small,
+            regularUrl = urls.regular,
+            fullUrl = urls.full
+        )
+
+    companion object {
+        private const val PER_PAGE = 30
     }
 }

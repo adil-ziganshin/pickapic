@@ -7,7 +7,15 @@ class PictureRepositoryImpl @Inject constructor(
     private val pictureService: PictureService
 ) : PictureRepository<PictureApiResponse> {
 
-    override suspend fun getData(query: String): PictureApiResponse {
-        return pictureService.getData(query = query)
+    override suspend fun getData(
+        query: String,
+        page: Int,
+        perPage: Int
+    ): PictureApiResponse {
+        return pictureService.getData(
+            query = query,
+            page = page,
+            perPage = perPage
+        )
     }
 }
