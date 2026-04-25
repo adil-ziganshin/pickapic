@@ -1,16 +1,16 @@
-package com.example.pickapic.wallpaper
+package com.example.pickapic.wallpaper.data
 
 import android.app.WallpaperManager
 import android.os.Build
+import com.example.pickapic.wallpaper.domain.SetWallpaperUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import javax.inject.Inject
 
-
-class WallpaperInteractorImpl @Inject constructor(
+class SetWallpaperUseCaseImpl @Inject constructor(
     private val wallpaperManager: WallpaperManager
-): WallpaperInteractor {
+): SetWallpaperUseCase {
 
     override suspend fun setWallpaper(
         pictureUrl: String
@@ -35,6 +35,6 @@ class WallpaperInteractorImpl @Inject constructor(
 
 
     private companion object {
-        const val TAG = "WallpaperInteractor"
+        const val TAG = "SetWallpaperUseCase"
     }
 }

@@ -1,7 +1,7 @@
 package com.example.pickapic.feature.favorites.data
 
-import com.gsgroup.feature_favorites_api.FavoritePicture
-import com.gsgroup.feature_favorites_api.RemoveFromFavoritesUseCase
+import com.gsgroup.feature_favorites_api.entity.FavoritePicture
+import com.gsgroup.feature_favorites_api.usecase.RemoveFromFavoritesUseCase
 import javax.inject.Inject
 
 class RemoveFromFavoritesUseCaseImpl @Inject constructor(

@@ -22,22 +22,22 @@ data class PreviewState(
     val isWallpaperSet: Boolean = false
 )
 
-sealed interface PicturesScreenState {
+sealed interface PicturesGridState {
 
     val title: String
 
-    data class Empty(override val title: String) : PicturesScreenState
+    data class Empty(override val title: String) : PicturesGridState
 
-    data class Loading(override val title: String) : PicturesScreenState
+    data class Loading(override val title: String) : PicturesGridState
 
     data class Loaded(
         override val title: String,
         val data: PicturesUiModel,
         val preview: PreviewState? = null
-    ) : PicturesScreenState
+    ) : PicturesGridState
 
     data class Error(
         override val title: String,
         val message: String?
-    ) : PicturesScreenState
+    ) : PicturesGridState
 }

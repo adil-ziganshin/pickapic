@@ -1,5 +1,6 @@
 package com.example.pickapic.feature.home.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pickapic.feature.home.domain.GetTopicsUseCase
@@ -61,6 +62,7 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                Log.e("HomeViewModel", "e = $e")
                 val message = if (e is HttpException && e.code() == 429) {
                     "Query Limit Reached"
                 } else {

@@ -1,7 +1,7 @@
 package com.example.pickapic.feature.favorites.data
 
 import android.util.Log
-import com.gsgroup.feature_favorites_api.FavoritePicture
+import com.gsgroup.feature_favorites_api.entity.FavoritePicture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

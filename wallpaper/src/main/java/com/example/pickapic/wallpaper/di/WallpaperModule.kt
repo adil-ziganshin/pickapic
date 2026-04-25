@@ -1,7 +1,9 @@
-package com.example.pickapic.wallpaper
+package com.example.pickapic.wallpaper.di
 
 import android.app.WallpaperManager
 import android.content.Context
+import com.example.pickapic.wallpaper.data.SetWallpaperUseCaseImpl
+import com.example.pickapic.wallpaper.domain.SetWallpaperUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -16,8 +18,8 @@ interface WallpaperModule {
 
     @Binds
     fun bindWallpaperInteractor(
-        wallpaperInteractorImpl: WallpaperInteractorImpl
-    ): WallpaperInteractor
+        useCaseImpl: SetWallpaperUseCaseImpl
+    ): SetWallpaperUseCase
 
     companion object {
         @Provides

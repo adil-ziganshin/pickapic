@@ -35,14 +35,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.pickapic.uikit.R
 import com.example.pickapic.uikit.components.TitleCard
+import com.example.pickapic.uikit.components.rememberHeavyFlingBehavior
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun PicturesScreen(
-    state: PicturesScreenState,
+fun PicturesGrid(
+    state: PicturesGridState,
     onPictureClick: (PreviewState) -> Unit,
     onPictureLongClick: (PictureUiItem) -> Unit,
     onPictureDoubleTap: (PreviewState) -> Unit,
@@ -63,21 +64,21 @@ fun PicturesScreen(
                     color = Pencil700,
                 )
                 when (state) {
-                    is PicturesScreenState.Empty -> Text(
+                    is PicturesGridState.Empty -> Text(
                         text = stringResource(id = R.string.no_data_available),
                         modifier = Modifier.padding(16.dp),
                     )
 
-                    is PicturesScreenState.Loading -> LoadingPlaceholder()
+                    is PicturesGridState.Loading -> LoadingPlaceholder()
 
-                    is PicturesScreenState.Error ->
+                    is PicturesGridState.Error ->
                         ErrorDialog(
                             message = state.message,
                             onDismiss = onErrorDismiss
                         )
 
-                    is PicturesScreenState.Loaded ->
-                        PicturesLoadedScreen(
+                    is PicturesGridState.Loaded ->
+                        PicturesLoaded(
                             pictures = state.data,
                             previewState = state.preview,
                             onPictureLongClick = onPictureLongClick,
@@ -106,7 +107,7 @@ private fun LoadingPlaceholder() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PicturesLoadedScreen(
+private fun PicturesLoaded(
     pictures: PicturesUiModel,
     previewState: PreviewState?,
     onPictureClick: (PreviewState) -> Unit,
@@ -143,6 +144,7 @@ private fun PicturesLoadedScreen(
         columns = StaggeredGridCells.Fixed(3),
         state = staggeredGridState,
         contentPadding = PaddingValues(2.dp),
+        flingBehavior = rememberHeavyFlingBehavior(velocityMultiplier = 0.1f),
         content = {
             items(
                 items = pictures.pictures,

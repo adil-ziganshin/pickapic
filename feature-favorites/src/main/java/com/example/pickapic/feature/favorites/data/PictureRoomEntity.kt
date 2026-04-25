@@ -2,7 +2,7 @@ package com.example.pickapic.feature.favorites.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.gsgroup.feature_favorites_api.FavoritePicture
+import com.gsgroup.feature_favorites_api.entity.FavoritePicture
 
 @Entity(tableName = "pictures")
 data class PictureRoomEntity(

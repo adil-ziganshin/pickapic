@@ -1,4 +1,4 @@
-package com.example.pickapic.core.data
+package com.example.pickapic.feature.pictures.data
 
 import com.example.pickapic.core.util.Constants.Companion.API_KEY
 import retrofit2.http.GET
@@ -10,10 +10,6 @@ interface PictureService {
         @Query("client_id") clientId: String = API_KEY,
         @Query("query") query: String,
         @Query("page") page: Int = 1,
-        @Query("per_page") perPage: Int = DEFAULT_PER_PAGE
+        @Query("per_page") perPage: Int
     ): PictureApiResponse
-
-    companion object {
-        const val DEFAULT_PER_PAGE = 30
-    }
 }

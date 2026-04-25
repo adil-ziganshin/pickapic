@@ -1,6 +1,5 @@
 package com.example.pickapic.feature.home.data
 
-import com.example.pickapic.core.data.TopicService
 import com.example.pickapic.feature.home.domain.Topic
 import javax.inject.Inject
 
@@ -13,7 +12,6 @@ class TopicsRepositoryImpl @Inject constructor(
             .map { dto ->
                 Topic(
                     id = dto.id,
-                    slug = dto.slug,
                     title = dto.title,
                     coverSmallUrl = dto.coverPhoto?.urls?.small,
                 )

@@ -1,7 +1,7 @@
 package com.example.pickapic.feature.favorites.data
 
-import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
-import com.gsgroup.feature_favorites_api.FavoritePicture
+import com.gsgroup.feature_favorites_api.usecase.AddToFavoritesUseCase
+import com.gsgroup.feature_favorites_api.entity.FavoritePicture
 import javax.inject.Inject
 
 class AddToFavoritesUseCaseImpl @Inject constructor(

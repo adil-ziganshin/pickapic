@@ -1,7 +1,5 @@
 package com.example.pickapic.core.di
 
-import com.example.pickapic.core.data.PictureService
-import com.example.pickapic.core.data.TopicService
 import com.example.pickapic.core.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -22,14 +20,4 @@ class NetworkModule {
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
-    @Provides
-    @Singleton
-    fun providePictureService(retrofit: Retrofit): PictureService =
-        retrofit.create(PictureService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideTopicService(retrofit: Retrofit): TopicService =
-        retrofit.create(TopicService::class.java)
 }

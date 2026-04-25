@@ -1,18 +1,18 @@
-package com.example.pickapic.feature.pictures
+package com.example.pickapic.feature.pictures.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.pickapic.uikit.pictures.PicturesScreen
-import com.example.pickapic.uikit.pictures.PicturesScreenState
+import com.example.pickapic.uikit.pictures.PicturesGrid
+import com.example.pickapic.uikit.pictures.PicturesGridState
 
 @Composable
 fun PicturesScreenRoute(
     viewModel: PicturesViewModel = hiltViewModel()
 ) {
-    val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
-    PicturesScreen(
+    val uiState: PicturesGridState by viewModel.uiState.collectAsState()
+    PicturesGrid(
         state = uiState,
         onPictureLongClick = {},
         onPreviewDismiss = viewModel::onDismissPreview,

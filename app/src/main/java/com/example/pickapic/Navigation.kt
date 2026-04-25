@@ -13,7 +13,7 @@ import com.example.pickapic.feature.auth.LoginScreen
 import com.example.pickapic.feature.auth.RegistrationScreen
 import com.example.pickapic.feature.favorites.ui.FavoritePicScreenRoute
 import com.example.pickapic.feature.home.ui.HomeScreenRoute
-import com.example.pickapic.feature.pictures.PicturesScreenRoute
+import com.example.pickapic.feature.pictures.ui.PicturesScreenRoute
 
 @Composable
 fun Navigation() {

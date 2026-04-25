@@ -1,12 +1,12 @@
-package com.example.pickapic.core.data
+package com.example.pickapic.feature.pictures.data
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PictureApiResponse(
     val total: Int,
-    @SerializedName("total_pages")
+    @SerialName("total_pages")
     val totalPages: Int,
     val results: List<Result>
 )

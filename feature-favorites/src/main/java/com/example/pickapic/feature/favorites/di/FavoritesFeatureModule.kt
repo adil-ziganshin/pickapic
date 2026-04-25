@@ -8,8 +8,8 @@ import com.example.pickapic.feature.favorites.data.FavoritePicturesRepository
 import com.example.pickapic.feature.favorites.data.FavoritePicturesRepositoryImpl
 import com.example.pickapic.feature.favorites.data.PictureDao
 import com.example.pickapic.feature.favorites.data.RemoveFromFavoritesUseCaseImpl
-import com.gsgroup.feature_favorites_api.AddToFavoritesUseCase
-import com.gsgroup.feature_favorites_api.RemoveFromFavoritesUseCase
+import com.gsgroup.feature_favorites_api.usecase.AddToFavoritesUseCase
+import com.gsgroup.feature_favorites_api.usecase.RemoveFromFavoritesUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.pickapic.feature.favorites.R
 import com.example.pickapic.feature.favorites.data.FavoritePicturesRepository
 import com.example.pickapic.uikit.pictures.PictureUiItem
-import com.example.pickapic.uikit.pictures.PicturesScreenState
+import com.example.pickapic.uikit.pictures.PicturesGridState
 import com.example.pickapic.uikit.pictures.PicturesUiModel
 import com.example.pickapic.uikit.pictures.PreviewState
-import com.example.pickapic.wallpaper.WallpaperInteractor
-import com.gsgroup.feature_favorites_api.FavoritePicture
-import com.gsgroup.feature_favorites_api.RemoveFromFavoritesUseCase
+import com.example.pickapic.wallpaper.domain.SetWallpaperUseCase
+import com.gsgroup.feature_favorites_api.entity.FavoritePicture
+import com.gsgroup.feature_favorites_api.usecase.RemoveFromFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,7 @@ class FavoritePicturesViewModel @Inject constructor(
     @ApplicationContext context: Context,
     favoritePicturesRepository: FavoritePicturesRepository,
     private val removeFromFavoritesUseCase: RemoveFromFavoritesUseCase,
-    private val wallpaperInteractor: WallpaperInteractor
+    private val setWallpaperUseCase: SetWallpaperUseCase
 ) : ViewModel() {
 
     private val tag = "FavoritePicturesVM"
@@ -37,21 +37,20 @@ class FavoritePicturesViewModel @Inject constructor(
     private val preview = MutableStateFlow<PreviewState?>(null)
     private val error = MutableStateFlow<String?>(null)
 
-    val uiState: StateFlow<PicturesScreenState> =
+    val uiState: StateFlow<PicturesGridState> =
         combine(
             favoritePicturesRepository.fetchPictures(),
             preview,
             error
         ) { favorites, previewState, errorMessage ->
             when {
-                errorMessage != null -> PicturesScreenState.Error(
+                errorMessage != null -> PicturesGridState.Error(
                     title = title,
                     message = errorMessage
                 )
+                favorites.isEmpty() -> PicturesGridState.Empty(title = title)
 
-                favorites.isEmpty() -> PicturesScreenState.Empty(title = title)
-
-                else -> PicturesScreenState.Loaded(
+                else -> PicturesGridState.Loaded(
                     title = title,
                     data = PicturesUiModel(
                         pictures = favorites.map { it.toPictureUiItem() }
@@ -62,12 +61,12 @@ class FavoritePicturesViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = PicturesScreenState.Loading(title = title)
+            initialValue = PicturesGridState.Loading(title = title)
         )
 
     fun onPicturePreview(previewState: PreviewState) {
         val state = uiState.value
-        if (state is PicturesScreenState.Loaded) {
+        if (state is PicturesGridState.Loaded) {
             preview.value = previewState
         } else {
             Log.d(tag, "onPicturePreview: wrong screen state")
@@ -94,7 +93,7 @@ class FavoritePicturesViewModel @Inject constructor(
     fun onSetWallpaper(pictureUrl: String) {
         viewModelScope.launch {
             preview.value = preview.value?.copy(settingWallpaper = true)
-            val setWallpaperResult = wallpaperInteractor.setWallpaper(pictureUrl = pictureUrl)
+            val setWallpaperResult = setWallpaperUseCase.setWallpaper(pictureUrl = pictureUrl)
             setWallpaperResult.fold(
                 onSuccess = {
                     preview.value = preview.value?.copy(
