@@ -1,6 +1,7 @@
 package com.example.pickapic.feature.home
 
 data class TopicModel(
-    val topicName: String,
-    val imageId: Int
+    val id: String,
+    val title: String,
+    val coverUrl: String?,
 )

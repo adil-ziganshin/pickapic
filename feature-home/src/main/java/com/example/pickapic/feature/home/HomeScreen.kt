@@ -1,15 +1,20 @@
 package com.example.pickapic.feature.home
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.FabPosition
@@ -21,6 +26,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.contentColorFor
@@ -28,8 +34,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -39,16 +51,37 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.pickapic.feature.home.TopicModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pickapic.uikit.components.TitleCard
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
 import com.example.pickapic.uikit.theme.Shapes
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
-fun HomeScreen(
+fun HomeScreenRoute(
     onPerformSearch: (String) -> Unit,
-    onFavoriteButtonClick: () -> Unit
+    onFavoriteButtonClick: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
+    val state by viewModel.uiState.collectAsState()
+    HomeScreen(
+        state = state,
+        onPerformSearch = onPerformSearch,
+        onFavoriteButtonClick = onFavoriteButtonClick,
+        onLoadMore = viewModel::loadNextPage,
+        onErrorDismiss = viewModel::onErrorDismiss,
+    )
+}
+
+@Composable
+private fun HomeScreen(
+    state: HomeScreenState,
+    onPerformSearch: (String) -> Unit,
+    onFavoriteButtonClick: () -> Unit,
+    onLoadMore: () -> Unit,
+    onErrorDismiss: () -> Unit,
 ) {
     PickapicTheme {
         Scaffold(
@@ -60,24 +93,24 @@ fun HomeScreen(
             },
             floatingActionButtonPosition = FabPosition.End
         ) {
-            Column(
-                modifier = Modifier
-            ) {
+            Column(modifier = Modifier) {
                 TitleCard(stringResource(id = R.string.home_title), Pencil700)
-                TopicsRow(onTopicChosen = onPerformSearch)
+                TopicsRow(
+                    topics = state.topics,
+                    isInitialLoading = state.isInitialLoading,
+                    isLoadingMore = state.isLoadingMore,
+                    endReached = state.endReached,
+                    onTopicChosen = onPerformSearch,
+                    onLoadMore = onLoadMore,
+                )
                 SearchBar(onPerformSearch = onPerformSearch)
+            }
+            if (state.errorMessage != null) {
+                ErrorDialog(message = state.errorMessage, onDismiss = onErrorDismiss)
             }
         }
     }
 }
-
-private val topicsList = listOf(
-    TopicModel("Nature", R.drawable.img_nature),
-    TopicModel("Flowers", R.drawable.img_flowers),
-    TopicModel("Cozy", R.drawable.img_cozy),
-    TopicModel("Animals", R.drawable.img_animals),
-    TopicModel("Urban", R.drawable.img_urban)
-)
 
 @Composable
 private fun FloatingFavoritesButton(onClick: () -> Unit) {
@@ -95,65 +128,125 @@ private fun FloatingFavoritesButton(onClick: () -> Unit) {
 
 @Composable
 private fun TopicsRow(
-    onTopicChosen: (topic: String) -> Unit
+    topics: List<TopicModel>,
+    isInitialLoading: Boolean,
+    isLoadingMore: Boolean,
+    endReached: Boolean,
+    onTopicChosen: (topic: String) -> Unit,
+    onLoadMore: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(2.dp)
-    ) {
+    val listState = rememberLazyListState()
+
+    InfiniteHorizontalListHandler(
+        listState = listState,
+        totalItems = topics.size,
+        isLoadingMore = isLoadingMore,
+        endReached = endReached,
+        onLoadMore = onLoadMore,
+    )
+
+    Column(modifier = Modifier.padding(2.dp)) {
         Text(
             text = "Topics",
             style = MaterialTheme.typography.h4,
             textAlign = TextAlign.End,
-            modifier = Modifier
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 32.dp
-                )
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 32.dp,
+            )
         )
-        LazyRow(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(320.dp)
         ) {
-            itemsIndexed(
-                topicsList
-            ) { _, item ->
-                TopicItem(
-                    item = item,
-                    onClick = onTopicChosen
+            when {
+                isInitialLoading && topics.isEmpty() -> CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
                 )
+
+                topics.isEmpty() -> Text(
+                    text = stringResource(id = com.example.pickapic.uikit.R.string.no_data_available),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp)
+                )
+
+                else -> LazyRow(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = topics,
+                        key = { it.id },
+                    ) { item ->
+                        TopicItem(
+                            item = item,
+                            onClick = onTopicChosen,
+                        )
+                    }
+                    if (isLoadingMore) {
+                        item(key = "topics_loading_more") {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 24.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SearchBar(
-    onPerformSearch: (String) -> Unit
+private fun InfiniteHorizontalListHandler(
+    listState: LazyListState,
+    totalItems: Int,
+    isLoadingMore: Boolean,
+    endReached: Boolean,
+    onLoadMore: () -> Unit,
+    prefetchDistance: Int = 3,
 ) {
+    val currentOnLoadMore by rememberUpdatedState(onLoadMore)
+    val shouldLoadMore = remember(listState, totalItems) {
+        snapshotFlow {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            totalItems > 0 && lastVisible >= totalItems - 1 - prefetchDistance
+        }.distinctUntilChanged().filter { it }
+    }
+
+    LaunchedEffect(shouldLoadMore, isLoadingMore, endReached) {
+        if (isLoadingMore || endReached) return@LaunchedEffect
+        shouldLoadMore.collect { reached ->
+            if (reached) currentOnLoadMore()
+        }
+    }
+}
+
+@Composable
+private fun SearchBar(onPerformSearch: (String) -> Unit) {
     val inputValue = remember { mutableStateOf(TextFieldValue()) }
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(
-                start = 20.dp,
-                end = 20.dp
-            ),
+            .padding(start = 20.dp, end = 20.dp),
         elevation = AppBarDefaults.TopAppBarElevation,
         color = Pencil700,
         shape = Shapes.large
     ) {
         TextField(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             value = inputValue.value,
-            onValueChange = {
-                inputValue.value = it
-            },
+            onValueChange = { inputValue.value = it },
             placeholder = {
                 Text(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
+                    modifier = Modifier.alpha(ContentAlpha.medium),
                     text = "Search here...",
                     color = Color.White
                 )
@@ -162,11 +255,8 @@ private fun SearchBar(
             singleLine = true,
             trailingIcon = {
                 IconButton(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    onClick = {
-                        onPerformSearch(inputValue.value.text)
-                    }
+                    modifier = Modifier.alpha(ContentAlpha.medium),
+                    onClick = { onPerformSearch(inputValue.value.text) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -175,13 +265,9 @@ private fun SearchBar(
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
-                onSearch = {
-                    onPerformSearch(inputValue.value.text)
-                }
+                onSearch = { onPerformSearch(inputValue.value.text) }
             ),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
@@ -189,4 +275,18 @@ private fun SearchBar(
             )
         )
     }
+}
+
+@Composable
+private fun ErrorDialog(message: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(com.example.pickapic.uikit.R.string.problem_occurred)) },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(android.R.string.ok))
+            }
+        }
+    )
 }

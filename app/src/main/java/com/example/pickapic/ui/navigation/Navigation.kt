@@ -11,8 +11,8 @@ import com.example.pickapic.core.navigation.PicturesRoute
 import com.example.pickapic.core.navigation.RegistrationRoute
 import com.example.pickapic.feature.auth.LoginScreen
 import com.example.pickapic.feature.auth.RegistrationScreen
-import com.example.pickapic.feature.favorites.ui.FavoritePicScreen
-import com.example.pickapic.feature.home.HomeScreen
+import com.example.pickapic.feature.favorites.ui.FavoritePicScreenRoute
+import com.example.pickapic.feature.home.HomeScreenRoute
 import com.example.pickapic.feature.pictures.PicturesScreenRoute
 
 @Composable
@@ -26,7 +26,7 @@ fun Navigation() {
             RegistrationScreen(navController = navController)
         }
         composable<HomeRoute> {
-            HomeScreen(
+            HomeScreenRoute(
                 onPerformSearch = {
                     navController.navigate(PicturesRoute(topic = it))
                 },
@@ -39,7 +39,7 @@ fun Navigation() {
             PicturesScreenRoute()
         }
         composable<FavoritePicRoute> {
-            FavoritePicScreen()
+            FavoritePicScreenRoute()
         }
     }
 }

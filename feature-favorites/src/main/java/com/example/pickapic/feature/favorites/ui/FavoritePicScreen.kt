@@ -8,7 +8,7 @@ import com.example.pickapic.uikit.pictures.PicturesScreen
 import com.example.pickapic.uikit.pictures.PicturesScreenState
 
 @Composable
-fun FavoritePicScreen(
+fun FavoritePicScreenRoute(
     viewModel: FavoritePicturesViewModel = hiltViewModel()
 ) {
     val uiState: PicturesScreenState by viewModel.uiState.collectAsState()
