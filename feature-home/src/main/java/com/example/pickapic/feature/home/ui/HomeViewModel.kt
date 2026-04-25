@@ -1,9 +1,9 @@
-package com.example.pickapic.feature.home
+package com.example.pickapic.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pickapic.core.domain.Topic
 import com.example.pickapic.feature.home.domain.GetTopicsUseCase
+import com.example.pickapic.feature.home.domain.Topic
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

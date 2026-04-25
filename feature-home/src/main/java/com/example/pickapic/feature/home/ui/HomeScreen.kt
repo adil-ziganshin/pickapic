@@ -1,4 +1,4 @@
-package com.example.pickapic.feature.home
+package com.example.pickapic.feature.home.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -52,6 +56,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pickapic.feature.home.R
 import com.example.pickapic.uikit.components.TitleCard
 import com.example.pickapic.uikit.theme.Pencil700
 import com.example.pickapic.uikit.theme.PickapicTheme
@@ -86,15 +91,21 @@ private fun HomeScreen(
     PickapicTheme {
         Scaffold(
             backgroundColor = MaterialTheme.colors.primary,
-            contentColor = contentColorFor(SnackbarDefaults.backgroundColor)
-                .takeOrElse { LocalContentColor.current },
+            modifier = Modifier,
             floatingActionButton = {
                 FloatingFavoritesButton(onClick = onFavoriteButtonClick)
             },
             floatingActionButtonPosition = FabPosition.End
-        ) {
-            Column(modifier = Modifier) {
-                TitleCard(stringResource(id = R.string.home_title), Pencil700)
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            ) {
+                TitleCard(
+                    text = stringResource(id = R.string.home_title),
+                    color = Pencil700
+                )
                 TopicsRow(
                     topics = state.topics,
                     isInitialLoading = state.isInitialLoading,
@@ -105,11 +116,13 @@ private fun HomeScreen(
                 )
                 SearchBar(onPerformSearch = onPerformSearch)
             }
+
             if (state.errorMessage != null) {
                 ErrorDialog(message = state.errorMessage, onDismiss = onErrorDismiss)
             }
         }
     }
+
 }
 
 @Composable
@@ -136,7 +149,6 @@ private fun TopicsRow(
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
-
     InfiniteHorizontalListHandler(
         listState = listState,
         totalItems = topics.size,
@@ -174,6 +186,7 @@ private fun TopicsRow(
 
                 else -> LazyRow(
                     state = listState,
+                    flingBehavior = rememberHeavyFlingBehavior(),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(
@@ -197,6 +210,22 @@ private fun TopicsRow(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberHeavyFlingBehavior(
+    velocityMultiplier: Float = 0.45f,
+): FlingBehavior {
+    val defaultFlingBehavior = ScrollableDefaults.flingBehavior()
+    return remember(defaultFlingBehavior, velocityMultiplier) {
+        object : FlingBehavior {
+            override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+                return with(defaultFlingBehavior) {
+                    performFling(initialVelocity * velocityMultiplier)
                 }
             }
         }

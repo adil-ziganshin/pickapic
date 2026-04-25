@@ -1,7 +1,7 @@
-package com.example.pickapic.core.data
+package com.example.pickapic.feature.home.data
 
-import com.example.pickapic.core.domain.Topic
-import com.example.pickapic.core.domain.TopicsRepository
+import com.example.pickapic.core.data.TopicService
+import com.example.pickapic.feature.home.domain.Topic
 import javax.inject.Inject
 
 class TopicsRepositoryImpl @Inject constructor(

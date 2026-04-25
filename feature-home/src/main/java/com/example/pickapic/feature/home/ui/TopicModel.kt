@@ -1,4 +1,4 @@
-package com.example.pickapic.feature.home
+package com.example.pickapic.feature.home.ui
 
 data class TopicModel(
     val id: String,

@@ -1,4 +1,4 @@
-package com.example.pickapic.ui.navigation
+package com.example.pickapic
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -12,7 +12,7 @@ import com.example.pickapic.core.navigation.RegistrationRoute
 import com.example.pickapic.feature.auth.LoginScreen
 import com.example.pickapic.feature.auth.RegistrationScreen
 import com.example.pickapic.feature.favorites.ui.FavoritePicScreenRoute
-import com.example.pickapic.feature.home.HomeScreenRoute
+import com.example.pickapic.feature.home.ui.HomeScreenRoute
 import com.example.pickapic.feature.pictures.PicturesScreenRoute
 
 @Composable

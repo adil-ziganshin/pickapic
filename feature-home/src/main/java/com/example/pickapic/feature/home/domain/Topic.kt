@@ -1,4 +1,4 @@
-package com.example.pickapic.core.domain
+package com.example.pickapic.feature.home.domain
 
 data class Topic(
     val id: String,
