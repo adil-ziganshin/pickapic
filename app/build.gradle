@@ -82,9 +82,11 @@ dependencies {
     kspTest 'com.google.dagger:hilt-compiler:2.59.2'
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    // No Espresso/Compose UI Test here: on API 35–36 Espresso can crash on
+    // InputManager.getInstance. UiAutomator uses the accessibility tree instead.
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 }
