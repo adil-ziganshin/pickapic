@@ -1,0 +1,33 @@
+# Detekt: defaults via build.gradle (buildUponDefaultConfig = true).
+# Docs: https://detekt.dev/docs/introduction/configurations
+#
+# Повышайте maxIssues (или снимайте build.maxIssues) по мере исправлений; baseline: ./gradlew detektBaseline
+
+config:
+  validation: true
+
+build:
+  # Ужесточьте (например, 0) после вычищения отчётов; пока — без падения джобы при большом бэклоге
+  maxIssues: 10000
+
+style:
+  WildcardImport:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludePackageStatements: true
+    excludeImportStatements: true
+
+empty-blocks:
+  EmptyFunctionBlock:
+    active: true
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 60
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 8
